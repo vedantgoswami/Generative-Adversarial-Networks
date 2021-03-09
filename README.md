@@ -83,3 +83,19 @@ by using noise from the numpy normal distribution for half of the batch size ima
 noise = np.random.normal(0,1,(half_batch,100)) 
 gen_imgs = generator.predict(noise)
 ```
+Now as we have the fake images. We would train our discriminator on the real images and fake images seperately and get the loss.
+<b>One thing to note that we are labeling our real images as 1 and fake images as 0.</b>
+After that averging the loss from real and fake data.
+```
+d_loss_real = discriminator.train_on_batch(imgs,np.ones((half_batch,1)))
+d_loss_fake = discriminator.train_on_batch(gen_imgs,np.zeros((half_batch,1)))
+d_loss = 0.5 * np.add(d_loss_real, d_loss_fake)
+```
+#### Generator Training
+For training the generator within the same epoch we had defined combined model  (stacked generator and discriminator) takes noise as input => generates images => determines validity.
+One important point to note here is that we are generating the fake images using the generator and labeling them as real images and them passing it through the disctiminator to classify them as real or fake. after this the discriminator will gives us his own classification and we will calculate the loss according to the images that we had labled as real but discriminator correctely predicted it as fake.
+```
+noise = np.random.normal(0,1,(batch_size,100))
+valid_y = np.array([1]*batch_size)
+g_loss = combined.train_on_batch(noise,valid_y)
+```
