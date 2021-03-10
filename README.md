@@ -32,7 +32,7 @@ Neccessary import for this model:
 <b> For this network i would recommend to GPU for faster training </b>
 
 Defining the input shape
-```
+```python
 img_rows = 28
 img_cols = 28
 channels = 1    # Gray Scale Images
@@ -40,7 +40,7 @@ img_shape = (img_rows,img_cols,channels)
 ```
 ## Generator Model
 The input of the generator will be noise of shape (100,1) from the Normal distribution and it will output an image of same size as that of training data.
-```
+```python
 model.add(Dense(256,input_shape=noise_shape))
 model.add(LeakyReLU(alpha=0.2))
 model.add(BatchNormalization(momentum=0.8))
@@ -50,7 +50,7 @@ The output of generator model is 28*28 = 786 pixels
 I had used tanh activation function to our output layer because generator has been found to perform the best with 𝑡𝑎𝑛ℎ for the generator output, which scales the output to be between -1 and 1, instead of 0 and 1.
 ## Discriminator Model
 The input of the discriminator is an image and the output is the validity, the likelihood of the image being real.OR Simply <b> Binary Classification</b>.
-```
+```python
 model= Sequential()
 model.add(Flatten(input_shape=img_shape))
 model.add(Dense(512))
@@ -64,29 +64,29 @@ model.summary()
 After creating both the generator model and the discriminator model now is the time to squeeze them together and start <b>Generator Vs Discriminator</b> training.
 
 To start the training, first of all we would re-scaling our training images in between -1 to 1 and setting the ground truths.
-```
+```python
 x_train = (x_train.astype(np.float32)-127.5)/127.5
 ```
 After that as the shape of the Mnist images is of (28 x 28), we would expand it to (28 x 28 x 1) by adding a channel to match it as per our model.
-```
+```python
 x_train = np.expand_dims(x_train,axis=3)
 ```
 #### Discriminator Training 
 Selecting images from the training sample of size equal to half of the batch size.
-```
+```python
 idx = np.random.randint(0, X_train.shape[0], half_batch)
 imgs = X_train[idx]
 ```
 For the discriminator to classify we would require some fake images, for that we will use the generator model( although initally it would be not trained )
 by using noise from the numpy normal distribution for half of the batch size images.
-```
+```python
 noise = np.random.normal(0,1,(half_batch,100)) 
 gen_imgs = generator.predict(noise)
 ```
 Now as we have the fake images. We would train our discriminator on the real images and fake images seperately and get the loss.
 <b>One thing to note that we are labeling our real images as 1 and fake images as 0.</b>
 After that averging the loss from real and fake data.
-```
+```python
 d_loss_real = discriminator.train_on_batch(imgs,np.ones((half_batch,1)))
 d_loss_fake = discriminator.train_on_batch(gen_imgs,np.zeros((half_batch,1)))
 d_loss = 0.5 * np.add(d_loss_real, d_loss_fake)
@@ -94,8 +94,26 @@ d_loss = 0.5 * np.add(d_loss_real, d_loss_fake)
 #### Generator Training
 For training the generator within the same epoch we had defined combined model  (stacked generator and discriminator) takes noise as input => generates images => determines validity.
 One important point to note here is that we are generating the fake images using the generator and labeling them as real images and them passing it through the disctiminator to classify them as real or fake. after this the discriminator will gives us his own classification and we will calculate the loss according to the images that we had labled as real but discriminator correctely predicted it as fake.
-```
+```python
 noise = np.random.normal(0,1,(batch_size,100))
 valid_y = np.array([1]*batch_size)
 g_loss = combined.train_on_batch(noise,valid_y)
 ```
+
+# The Conclusion...
+| EPOCH #0      | EPOCH #400     |
+|------------|-------------|
+| <img src="https://github.com/vedantgoswami/Generative-Adversarial-Networks/blob/main/Images/mnist_0.png" width="500"> | <img src="https://github.com/vedantgoswami/Generative-Adversarial-Networks/blob/main/Images/mnist_400.png" width="500"> |
+
+| EPOCH #1000      | EPOCH #5000     |
+|------------|-------------|
+| <img src="https://github.com/vedantgoswami/Generative-Adversarial-Networks/blob/main/Images/mnist_1000.png" width="500"> | <img src="https://github.com/vedantgoswami/Generative-Adversarial-Networks/blob/main/Images/mnist_5000.png" width="500"> |
+
+| EPOCH #10000     | EPOCH #15000     |
+|------------|-------------|
+| <img src="https://github.com/vedantgoswami/Generative-Adversarial-Networks/blob/main/Images/mnist_10000.png" width="500"> | <img src="https://github.com/vedantgoswami/Generative-Adversarial-Networks/blob/main/Images/mnist_15000.png" width="500"> |
+
+
+ |  EPOCH #99400     |
+ |-------------|
+ | <img src="https://github.com/vedantgoswami/Generative-Adversarial-Networks/blob/main/Images/mnist_99400.png" align="center" width="600"> |
