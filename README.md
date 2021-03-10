@@ -114,6 +114,6 @@ g_loss = combined.train_on_batch(noise,valid_y)
 | <img src="https://github.com/vedantgoswami/Generative-Adversarial-Networks/blob/main/Images/mnist_10000.png" width="500"> | <img src="https://github.com/vedantgoswami/Generative-Adversarial-Networks/blob/main/Images/mnist_15000.png" width="500"> |
 
 
- |  EPOCH #99400     |
- |-------------|
- | <img src="https://github.com/vedantgoswami/Generative-Adversarial-Networks/blob/main/Images/mnist_99400.png" align="center" width="600"> |
+ | EPOCH #85000     | EPOCH #99400     |
+|------------|-------------|
+| <img src="https://github.com/vedantgoswami/Generative-Adversarial-Networks/blob/main/Images/mnist_85000.png" width="500"> | <img src="https://github.com/vedantgoswami/Generative-Adversarial-Networks/blob/main/Images/mnist_99400.png" width="500"> |
